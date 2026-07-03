@@ -4,11 +4,8 @@
     <!-- Toast Notification Container (Automatic fallback) -->
     <div id="custom-toast-container"></div>
 
-    <!-- Bootstrap 5 Bundle JS (Popper included) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <!-- Main Vanilla JavaScript -->
-    <script src="assets/js/main.js"></script>
+    <script src="assets/js/main.js" defer></script>
 
     <!-- Trigger Toast Notification if set in Session -->
     <?php if (isset($_SESSION['toast'])): ?>

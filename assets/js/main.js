@@ -35,7 +35,12 @@ function initFadeIn() {
     fadeElements.forEach((el, index) => {
         setTimeout(() => {
             el.style.opacity = '1';
-            el.style.transform = 'translateY(0)';
+            // Jangan set transform pada body! body yg punya transform
+            // akan membuat position:fixed (modal Bootstrap) jadi relatif
+            // ke body, bukan viewport — modal jadi muncul di bawah halaman.
+            if (el.tagName !== 'BODY') {
+                el.style.transform = 'translateY(0)';
+            }
         }, index * 100);
     });
 }

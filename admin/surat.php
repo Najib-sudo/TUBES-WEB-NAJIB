@@ -15,7 +15,7 @@ $surats = $suratModel->getAll();
             <p class="text-muted mb-0">Kelola daftar nama surat dan jumlah ayat untuk setoran.</p>
         </div>
         <div>
-            <button class="btn btn-glass d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addSuratModal">
+            <button class="btn btn-glass d-flex align-items-center gap-2" id="btnTambahSurat" type="button">
                 <i class="bi bi-plus-circle-fill"></i>
                 <span>Tambah Surat</span>
             </button>
@@ -60,13 +60,11 @@ $surats = $suratModel->getAll();
                             <tr>
                                 <td><?= $index + 1 ?></td>
                                 <td class="fw-bold text-accent-dark"><?= htmlspecialchars($surat['nama_surat']) ?></td>
-                                <td><span class="badge bg-light text-accent-dark border border-success-subtle px-3 py-1 font-monospace fs-6"><?= $surat['jumlah_ayat'] ?> Ayat</span></td>
+                                <td><span class="badge bg-light text-black border border-success-subtle px-3 py-1 font-monospace fs-6"><?= $surat['jumlah_ayat'] ?> Ayat</span></td>
                                 <td align="center">
                                     <div class="d-flex align-items-center justify-content-center gap-2">
                                         <!-- Edit trigger -->
-                                        <button class="btn btn-sm btn-glass-secondary border-0 p-2" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#editSuratModal"
+                                        <button class="btn btn-sm btn-glass-secondary border-0 p-2 btn-edit-surat" 
                                                 data-id="<?= $surat['id'] ?>"
                                                 data-nama="<?= htmlspecialchars($surat['nama_surat']) ?>"
                                                 data-ayat="<?= $surat['jumlah_ayat'] ?>"
@@ -160,26 +158,60 @@ $surats = $suratModel->getAll();
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const editSuratModal = document.getElementById('editSuratModal');
-        if (editSuratModal) {
-            editSuratModal.addEventListener('show.bs.modal', function(event) {
-                const button = event.relatedTarget;
-                const id = button.getAttribute('data-id');
-                const nama = button.getAttribute('data-nama');
-                const ayat = button.getAttribute('data-ayat');
-                
-                const form = document.getElementById('editSuratForm');
-                form.action = 'index.php?page=surat&action=update&id=' + id;
-                
-                document.getElementById('edit_nama_surat').value = nama;
-                document.getElementById('edit_jumlah_ayat').value = ayat;
+    // Gunakan window.load agar Bootstrap JS dipastikan sudah dimuat
+    window.addEventListener('load', function() {
+        // Pindahkan modal ke body agar bebas dari stacking context
+        ['addSuratModal', 'editSuratModal'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el && el.parentElement !== document.body) {
+                document.body.appendChild(el);
+            }
+        });
+
+        // Inisialisasi modal Bootstrap
+        var addModalEl  = document.getElementById('addSuratModal');
+        var editModalEl = document.getElementById('editSuratModal');
+        var addModal  = addModalEl  ? new bootstrap.Modal(addModalEl,  { keyboard: true, backdrop: true }) : null;
+        var editModal = editModalEl ? new bootstrap.Modal(editModalEl, { keyboard: true, backdrop: true }) : null;
+
+        // Tombol Tambah Surat
+        var addBtn = document.getElementById('btnTambahSurat');
+        if (addBtn && addModal) {
+            addBtn.addEventListener('click', function() {
+                addModal.show();
             });
         }
 
-        const validateForms = (selector) => {
-            const forms = document.querySelectorAll(selector);
-            forms.forEach(form => {
+        // Tombol Edit Surat
+        document.querySelectorAll('.btn-edit-surat').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var id   = this.getAttribute('data-id');
+                var nama = this.getAttribute('data-nama');
+                var ayat = this.getAttribute('data-ayat');
+
+                var form = document.getElementById('editSuratForm');
+                if (form) form.action = 'index.php?page=surat&action=update&id=' + id;
+
+                var nameField = document.getElementById('edit_nama_surat');
+                var ayatField = document.getElementById('edit_jumlah_ayat');
+                if (nameField) nameField.value = nama;
+                if (ayatField) ayatField.value = ayat;
+
+                if (editModal) editModal.show();
+            });
+        });
+
+        // Tombol Close di dalam modal
+        document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(function(closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                if (addModal) addModal.hide();
+                if (editModal) editModal.hide();
+            });
+        });
+
+        // Validasi form
+        function validateForms(selector) {
+            document.querySelectorAll(selector).forEach(function(form) {
                 form.addEventListener('submit', function(e) {
                     if (!form.checkValidity()) {
                         e.preventDefault();
@@ -188,7 +220,7 @@ $surats = $suratModel->getAll();
                     form.classList.add('was-validated');
                 }, false);
             });
-        };
+        }
 
         validateForms('.needs-validation-surat');
         validateForms('.needs-validation-surat-edit');

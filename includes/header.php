@@ -19,6 +19,9 @@ if (session_status() === PHP_SESSION_NONE) {
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     
+    <!-- Bootstrap 5 Bundle JS (loaded in head with defer) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    
     <!-- Custom Glassmorphism CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
